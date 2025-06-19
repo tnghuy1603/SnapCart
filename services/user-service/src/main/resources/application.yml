@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: user-service
+  data:
+    mongodb:
+      uri: ${MONGO_DB_CONNECTION_STRING}
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+      database: ${REDIS_DB}
+      password: ${REDIS_PASSWORD}
+
