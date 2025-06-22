@@ -2,6 +2,8 @@ package com.snapcart.order_service.service.impl;
 
 import com.snapcart.order_service.dto.mapper.CartMapper;
 import com.snapcart.order_service.dto.response.CartResponse;
+import com.snapcart.order_service.dto.response.PrecalculateResponse;
+import com.snapcart.order_service.dto.response.ProductInfo;
 import com.snapcart.order_service.dto.response.UserInfo;
 import com.snapcart.order_service.entity.CartEntity;
 import com.snapcart.order_service.entity.CartLine;
@@ -30,12 +32,12 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public CartResponse findCartByBuyerId(String buyerId) {
-        UserInfo userInfo = userServiceClient.getUserInfo(buyerId).getData();
-        if (userInfo == null) {
-            throw new RuntimeException("Not found any cart with id" + buyerId);
-        }
         CartEntity cartEntity = cartRepository.findByBuyerId(buyerId);
         if (cartEntity == null) {
+            UserInfo userInfo = userServiceClient.getUserInfo(buyerId).getData();
+            if (userInfo == null) {
+                throw new RuntimeException("Not found any cart with id" + buyerId);
+            }
             cartEntity = new CartEntity();
             cartEntity.setBuyerId(buyerId);
             cartEntity.setCartLines(List.of());
@@ -86,5 +88,20 @@ public class CartServiceImpl implements CartService {
         }
         cartEntity = cartRepository.save(cartEntity);
         return cartMapper.toModel(cartEntity);
+    }
+
+    @Override
+    public PrecalculateResponse precalculateCart(String buyerId) {
+        CartEntity cartEntity = cartRepository.findByBuyerId(buyerId);
+        if (cartEntity == null) {
+            throw new RuntimeException("Cart not found with buyerId: " + buyerId);
+        }
+        List<String> productIds = cartEntity.getCartLines()
+                .stream()
+                .map(CartLine::getProductId)
+                .toList();
+        List<ProductInfo> product = productServiceClient.getProductInfoList(productIds).getData();
+
+
     }
 }

@@ -7,5 +7,5 @@ import lombok.Setter;
 @Setter
 public class CheckOutRequest {
     private String buyerId;
-    
+    private String deliveryAddress;
 }
