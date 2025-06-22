@@ -67,7 +67,7 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
 
         query.with(pageable);
         if (request.getSortBy() != null) {
-            query.with(pageable.getSort());
+            query.with(getSortOption(request.getSortBy()));
         }
         List<ProductEntity> entities = mongoTemplate.find(query, ProductEntity.class);
         long count = mongoTemplate.count(query, ProductEntity.class);
