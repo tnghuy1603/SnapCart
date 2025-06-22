@@ -1,4 +1,4 @@
-package com.snapcart.user_service.dto.response;
+package com.snapcart.order_service.dto.response;
 
 import lombok.Builder;
 import lombok.Getter;

@@ -1,7 +1,7 @@
 package com.snapcart.user_service.controller;
 
 import com.snapcart.user_service.dto.LoginRequest;
-import com.snapcart.user_service.dto.RegisterRequest;
+import com.snapcart.user_service.dto.request.RegisterRequest;
 import com.snapcart.user_service.dto.response.SnapCartResponse;
 import com.snapcart.user_service.service.AuthService;
 import jakarta.servlet.http.HttpServletResponse;
@@ -18,12 +18,12 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request, HttpServletResponse response) {
         authService.login(request, response);
-        return ResponseEntity.ok(SnapCartResponse.successResponse("Login successful"));
+        return SnapCartResponse.successResponse("Login successful");
     }
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
         authService.register(request);
-        return ResponseEntity.ok(SnapCartResponse.successResponse("Register successful"));
+        return SnapCartResponse.successResponse("Register successful");
     }
 }

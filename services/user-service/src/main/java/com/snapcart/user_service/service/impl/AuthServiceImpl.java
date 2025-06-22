@@ -2,9 +2,7 @@ package com.snapcart.user_service.service.impl;
 
 import com.snapcart.user_service.config.Session;
 import com.snapcart.user_service.dto.LoginRequest;
-import com.snapcart.user_service.dto.LoginResponse;
-import com.snapcart.user_service.dto.RegisterRequest;
-import com.snapcart.user_service.dto.response.RegisterResponse;
+import com.snapcart.user_service.dto.request.RegisterRequest;
 import com.snapcart.user_service.entity.UserEntity;
 import com.snapcart.user_service.repository.UserRepository;
 import com.snapcart.user_service.service.AuthService;

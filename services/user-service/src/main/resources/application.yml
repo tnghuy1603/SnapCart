@@ -9,4 +9,5 @@ spring:
       port: ${REDIS_PORT}
       database: ${REDIS_DB}
       password: ${REDIS_PASSWORD}
-
+server:
+  port: ${SERVER_PORT}

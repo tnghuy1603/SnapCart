@@ -1,4 +1,4 @@
-package com.snapcart.user_service.dto;
+package com.snapcart.user_service.dto.request;
 
 import com.snapcart.user_service.constant.UserRole;
 import lombok.Getter;
