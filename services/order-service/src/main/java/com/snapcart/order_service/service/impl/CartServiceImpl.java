@@ -2,10 +2,13 @@ package com.snapcart.order_service.service.impl;
 
 import com.snapcart.order_service.dto.mapper.CartMapper;
 import com.snapcart.order_service.dto.response.CartResponse;
+import com.snapcart.order_service.dto.response.UserInfo;
 import com.snapcart.order_service.entity.CartEntity;
 import com.snapcart.order_service.entity.CartLine;
 import com.snapcart.order_service.repository.CartRepository;
 import com.snapcart.order_service.service.CartService;
+import com.snapcart.order_service.service.ProductServiceClient;
+import com.snapcart.order_service.service.UserServiceClient;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -22,12 +25,21 @@ import java.util.stream.Collectors;
 public class CartServiceImpl implements CartService {
     private final CartRepository cartRepository;
     private final CartMapper cartMapper;
+    private final UserServiceClient userServiceClient;
+    private final ProductServiceClient productServiceClient;
 
     @Override
     public CartResponse findCartByBuyerId(String buyerId) {
+        UserInfo userInfo = userServiceClient.getUserInfo(buyerId).getData();
+        if (userInfo == null) {
+            throw new RuntimeException("Not found any cart with id" + buyerId);
+        }
         CartEntity cartEntity = cartRepository.findByBuyerId(buyerId);
         if (cartEntity == null) {
-            throw new RuntimeException("Cart not found with buyerId: " + buyerId);
+            cartEntity = new CartEntity();
+            cartEntity.setBuyerId(buyerId);
+            cartEntity.setCartLines(List.of());
+            cartEntity = cartRepository.save(cartEntity);
         }
         return cartMapper.toModel(cartEntity);
     }

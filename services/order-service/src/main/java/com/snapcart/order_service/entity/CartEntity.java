@@ -22,7 +22,6 @@ public class CartEntity {
     private String id;
     @Indexed(unique = true)
     private String buyerId;
-    private BigDecimal totalAmount;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private List<CartLine> cartLines;
