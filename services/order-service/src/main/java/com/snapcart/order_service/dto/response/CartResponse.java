@@ -1,20 +1,17 @@
 package com.snapcart.order_service.dto.response;
 
-import com.snapcart.order_service.entity.CartLine;
-import lombok.Getter;
-import lombok.Setter;
-import org.springframework.data.mongodb.core.index.Indexed;
+import lombok.*;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-@Getter
+
 @Setter
+@Getter
+@Builder
 public class CartResponse {
     private String id;
-    private String userId;
-    private BigDecimal totalAmount;
+    private String buyerId;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private List<CartLine> cartLines;
+    private List<CartLineResponse> cartLines;
 }

@@ -1,9 +1,8 @@
-package com.snapcart.order_service.entity;
+package com.snapcart.order_service.dto.response;
 
 import lombok.Getter;
 import lombok.Setter;
 
-import java.math.BigDecimal;
 @Getter
 @Setter
 public class CartLine {

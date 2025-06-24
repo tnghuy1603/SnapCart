@@ -6,9 +6,9 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class FilterOrderRequest {
+public class FilterOrderLineRequest {
     private String orderId;
-    private String buyerId;
-    private int limit = 8;
-    private int offset = 0;
+    private OrderLineStatus status;
+    private String sellerId;
+
 }

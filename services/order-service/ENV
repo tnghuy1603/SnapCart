@@ -1,0 +1,8 @@
+SERVER_PORT=8082;
+MONGO_DB_CONNECTION_STRING=mongodb://huytran:Letmein123@localhost:27017/snap-cart-order?authSource=admin;
+REDIS_HOST=localhost;
+REDIS_PORT=6379;
+REDIS_DB=0;
+REDIS_PASSWORD=Letmein123;
+PRODUCT_SERVICE_HOST=http://localhost:8084;
+USER_SERVICE_HOST=http://localhost:8081;

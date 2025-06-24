@@ -1,6 +1,8 @@
 package com.snapcart.order_service.controller;
 
 import com.snapcart.order_service.dto.request.CheckOutRequest;
+import com.snapcart.order_service.dto.request.FilterOrderRequest;
+import com.snapcart.order_service.dto.response.SnapCartResponse;
 import com.snapcart.order_service.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -14,9 +16,12 @@ public class OrderController {
 
     @PostMapping("/checkout")
     public ResponseEntity<?> checkout(@RequestBody CheckOutRequest request) {
-        return ResponseEntity.ok().build();
+        return SnapCartResponse.successResponse(orderService.createOrder(request), null);
     }
 
     @GetMapping
-    public ResponseEntity<?> getOrders() {}
+    public ResponseEntity<?> filterOrder(FilterOrderRequest request) {
+        return SnapCartResponse.successResponse(orderService.filterOrder(request), null);
+    }
+
 }

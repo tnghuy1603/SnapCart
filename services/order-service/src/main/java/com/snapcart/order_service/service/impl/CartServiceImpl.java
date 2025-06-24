@@ -1,24 +1,17 @@
 package com.snapcart.order_service.service.impl;
 
-import com.snapcart.order_service.dto.mapper.CartMapper;
-import com.snapcart.order_service.dto.response.CartResponse;
-import com.snapcart.order_service.dto.response.PrecalculateResponse;
-import com.snapcart.order_service.dto.response.ProductInfo;
-import com.snapcart.order_service.dto.response.UserInfo;
+import com.snapcart.order_service.dto.response.*;
 import com.snapcart.order_service.entity.CartEntity;
-import com.snapcart.order_service.entity.CartLine;
+import com.snapcart.order_service.dto.response.CartLine;
 import com.snapcart.order_service.repository.CartRepository;
 import com.snapcart.order_service.service.CartService;
 import com.snapcart.order_service.service.ProductServiceClient;
 import com.snapcart.order_service.service.UserServiceClient;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -26,7 +19,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CartServiceImpl implements CartService {
     private final CartRepository cartRepository;
-    private final CartMapper cartMapper;
     private final UserServiceClient userServiceClient;
     private final ProductServiceClient productServiceClient;
 
@@ -34,16 +26,17 @@ public class CartServiceImpl implements CartService {
     public CartResponse findCartByBuyerId(String buyerId) {
         CartEntity cartEntity = cartRepository.findByBuyerId(buyerId);
         if (cartEntity == null) {
-            UserInfo userInfo = userServiceClient.getUserInfo(buyerId).getData();
+            SnapCartResponse<UserInfo> response = userServiceClient.getUserInfo(buyerId);
+            UserInfo userInfo = response.getData();
             if (userInfo == null) {
                 throw new RuntimeException("Not found any cart with id" + buyerId);
             }
             cartEntity = new CartEntity();
             cartEntity.setBuyerId(buyerId);
-            cartEntity.setCartLines(List.of());
+            cartEntity.setCartLines(Set.of());
             cartEntity = cartRepository.save(cartEntity);
         }
-        return cartMapper.toModel(cartEntity);
+        return this.bindProductInfo(cartEntity);
     }
 
     @Override
@@ -65,14 +58,18 @@ public class CartServiceImpl implements CartService {
             cartEntity.getCartLines().add(cartLine);
         }
         cartEntity = cartRepository.save(cartEntity);
-        return cartMapper.toModel(cartEntity);
+        return this.bindProductInfo(cartEntity);
     }
 
     @Override
-    public CartResponse addToCart(String buyerId, String productId, int quantity) {
+    public void addToCart(String buyerId, String productId, int quantity) {
         CartEntity cartEntity = cartRepository.findByBuyerId(buyerId);
         if (cartEntity == null) {
             throw new RuntimeException("Cart not found with buyerId: " + buyerId);
+        }
+        ProductInfo productInfo = productServiceClient.getProductInfo(productId).getData();
+        if (productInfo == null) {
+            throw new RuntimeException("Product not found with productId: " + productId);
         }
         Map<String, CartLine> cartLineMap = cartEntity.getCartLines()
                 .stream()
@@ -86,22 +83,94 @@ public class CartServiceImpl implements CartService {
             cartLine.setQuantity(quantity);
             cartEntity.getCartLines().add(cartLine);
         }
-        cartEntity = cartRepository.save(cartEntity);
-        return cartMapper.toModel(cartEntity);
+        cartRepository.save(cartEntity);
     }
 
     @Override
-    public PrecalculateResponse precalculateCart(String buyerId) {
+    public int countTotalItemsInCart(String buyerId) {
         CartEntity cartEntity = cartRepository.findByBuyerId(buyerId);
         if (cartEntity == null) {
             throw new RuntimeException("Cart not found with buyerId: " + buyerId);
         }
+        Set<CartLine> cartLineList = cartEntity.getCartLines();
+        int numberOfItems = 0;
+        for (CartLine cartLine : cartLineList) {
+            numberOfItems = numberOfItems + cartLine.getQuantity();
+        }
+        return numberOfItems;
+    }
+
+    @Override
+    public PrecalculateResponse precalculateCart(String buyerId, List<CartLine> itemToCheckout) {
+        CartEntity cartEntity = cartRepository.findByBuyerId(buyerId);
+        if (cartEntity == null) {
+            throw new RuntimeException("Cart not found with buyerId: " + buyerId);
+        }
+        if (!new HashSet<>(cartEntity.getCartLines()).containsAll(itemToCheckout)) {
+            throw new RuntimeException("One of the item is not in the cart");
+        }
+
+        BigDecimal shippingFee = BigDecimal.ZERO;
+        BigDecimal totalAmount = BigDecimal.ZERO.add(shippingFee);
+        Map<String, ProductInfo> productInfoMap = getProductInfoMap(cartEntity.getCartLines());
+        for (CartLine cartLine : itemToCheckout) {
+            ProductInfo productInfo = productInfoMap.get(cartLine.getProductId());
+            totalAmount = totalAmount.add(BigDecimal.valueOf(cartLine.getQuantity()).multiply(productInfo.getPrice()));
+        }
+        return PrecalculateResponse.builder()
+                .subTotal(totalAmount)
+                .shippingFee(shippingFee)
+                .build();
+    }
+
+    private Map<String, ProductInfo> getCartItemProductInfo(CartEntity cartEntity) {
         List<String> productIds = cartEntity.getCartLines()
                 .stream()
                 .map(CartLine::getProductId)
                 .toList();
-        List<ProductInfo> product = productServiceClient.getProductInfoList(productIds).getData();
-
-
+        List<ProductInfo> productInfoList = productServiceClient.getProductInfoList(productIds).getData();
+        return productInfoList.stream()
+                .collect(Collectors.toMap(ProductInfo::getId, Function.identity()));
     }
+
+    private Map<String, ProductInfo> getProductInfoMap(Set<CartLine> cartLines) {
+        List<String> productIds = cartLines
+                .stream()
+                .map(CartLine::getProductId)
+                .toList();
+        List<ProductInfo> productInfoList = productServiceClient.getProductInfoList(productIds).getData();
+        return productInfoList.stream()
+                .collect(Collectors.toMap(ProductInfo::getId, Function.identity()));
+    }
+
+    private CartResponse bindProductInfo(CartEntity cartEntity) {
+        Map<String, ProductInfo> productInfoMap = getCartItemProductInfo(cartEntity);
+        List<CartLineResponse> cartLineResponses = new ArrayList<>();
+
+        for (CartLine cartLine : cartEntity.getCartLines()) {
+            ProductInfo productInfo = productInfoMap.get(cartLine.getProductId());
+            BigDecimal subtotal = productInfo.getPrice().multiply(BigDecimal.valueOf(cartLine.getQuantity()));
+            CartLineResponse cartLineResponse = CartLineResponse.builder()
+                    .productId(cartLine.getProductId())
+                    .quantity(cartLine.getQuantity())
+                    .outOfStock(cartLine.getQuantity() > productInfo.getStock())
+                    .price(productInfo.getPrice())
+                    .name(productInfo.getName())
+                    .subtotal(subtotal)
+                    .images(productInfo.getImages())
+                    .build();
+
+            cartLineResponses.add(cartLineResponse);
+        }
+        return CartResponse.builder()
+                .cartLines(cartLineResponses)
+                .id(cartEntity.getId())
+                .buyerId(cartEntity.getBuyerId())
+                .createdAt(cartEntity.getCreatedAt())
+                .updatedAt(cartEntity.getUpdatedAt())
+                .build();
+    }
+
+
+
 }

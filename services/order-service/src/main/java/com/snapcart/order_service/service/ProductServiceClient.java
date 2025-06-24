@@ -4,15 +4,16 @@ import com.snapcart.order_service.dto.response.ProductInfo;
 import com.snapcart.order_service.dto.response.SnapCartResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
-@FeignClient
+@FeignClient(name = "product-service", url = "${url.product-service}")
 public interface ProductServiceClient {
-    @GetMapping
-    SnapCartResponse<ProductInfo> getProductInfo(@RequestParam String productId);
+    @GetMapping("/products/{id}")
+    SnapCartResponse<ProductInfo> getProductInfo(@PathVariable("id") String productId);
 
-    @GetMapping("/by-ids")
-    SnapCartResponse<List<ProductInfo>> getProductInfoList(@RequestParam List<String> productIds);
+    @GetMapping("/products/by-ids")
+    SnapCartResponse<List<ProductInfo>> getProductInfoList(@RequestParam("ids") List<String> productIds);
 }

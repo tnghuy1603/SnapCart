@@ -1,5 +1,7 @@
 package com.snapcart.order_service.entity;
 
+import com.snapcart.order_service.constant.OrderLineStatus;
+import com.snapcart.order_service.dto.response.OrderStatusHistory;
 import lombok.*;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -15,12 +17,9 @@ import java.util.List;
 public class OrderEntity {
     private String id;
     private String buyerId;
-    private String sellerId;
     private String paymentId;
     private String deliveryAddress;
     private BigDecimal subTotal;
     private BigDecimal shippingFee;
     private BigDecimal totalAmount;
-    private List<OrderLine> orderLines;
-    private List<OrderStatusHistory> statusHistory;
 }
