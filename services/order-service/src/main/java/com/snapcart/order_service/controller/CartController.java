@@ -44,4 +44,6 @@ public class CartController {
     public ResponseEntity<?> getNumberOfItems(@PathVariable("buyerId") String buyerId) {
         return SnapCartResponse.successResponse(cartService.countTotalItemsInCart(buyerId), null);
     }
+
+
 }

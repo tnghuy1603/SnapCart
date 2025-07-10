@@ -14,3 +14,6 @@ server:
 url:
   user-service: ${USER_SERVICE_HOST}
   product-service: ${PRODUCT_SERVICE_HOST}
+
+kafka:
+  servers: ${KAFKA_SERVERS}

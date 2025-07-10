@@ -2,6 +2,7 @@ package com.snapcart.product_service.controller;
 
 import com.snapcart.product_service.dto.request.AddProductRequest;
 import com.snapcart.product_service.dto.request.FilterProductRequest;
+import com.snapcart.product_service.dto.request.ReserveStockRequest;
 import com.snapcart.product_service.dto.request.UpdateProductRequest;
 import com.snapcart.product_service.dto.response.SnapCartResponse;
 import com.snapcart.product_service.service.ProductService;
@@ -48,6 +49,11 @@ public class ProductController {
     @GetMapping("/by-ids")
     public ResponseEntity<?> getProductByIds(@RequestParam("ids") List<String> ids) {
         return SnapCartResponse.successResponse(productService.getProductByIds(ids), null);
+    }
+    @PostMapping("/reserve-stock")
+    public ResponseEntity<?> reserveStock(@RequestBody ReserveStockRequest request) {
+        productService.reserveStock(request);
+        return SnapCartResponse.successResponse("Success");
     }
 
 }

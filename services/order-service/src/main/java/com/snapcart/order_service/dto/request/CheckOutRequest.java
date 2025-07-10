@@ -10,6 +10,8 @@ import java.util.List;
 @Setter
 public class CheckOutRequest {
     private String buyerId;
+    private String paymentMethod; //COD
+    private String paymentProvider;
     private List<CartLine> cartLines;
     private String deliveryAddress;
 }

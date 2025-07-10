@@ -25,7 +25,9 @@ public class OrderLineStateMachineConfig extends StateMachineConfigurerAdapter<O
     @Override
     public void configure(StateMachineStateConfigurer<OrderLineStatus, OrderLineEvent> states) throws Exception {
         states.withStates()
-                .initial(OrderLineStatus.PENDING)
+                .initial(OrderLineStatus.PROCESSING)
+                .state(OrderLineStatus.FAIL)
+                .state(OrderLineStatus.PENDING)
                 .state(OrderLineStatus.CONFIRMED)
                 .state(OrderLineStatus.SHIPPING)
                 .state(OrderLineStatus.DELIVERED)
@@ -35,6 +37,10 @@ public class OrderLineStateMachineConfig extends StateMachineConfigurerAdapter<O
     @Override
     public void configure(StateMachineTransitionConfigurer<OrderLineStatus, OrderLineEvent> transitions) throws Exception {
         transitions
+                .withExternal().source(OrderLineStatus.PROCESSING).target(OrderLineStatus.PENDING).event(OrderLineEvent.PLACE_ORDER).action(logAction())
+                .and()
+                .withExternal().source(OrderLineStatus.PROCESSING).target(OrderLineStatus.FAIL).event(OrderLineEvent.FAIL_TO_PLACE).action(logAction())
+                .and()
                 .withExternal().source(OrderLineStatus.PENDING).target(OrderLineStatus.CONFIRMED).event(OrderLineEvent.CONFIRM_ORDER).action(logAction())
                 .and()
                 .withExternal().source(OrderLineStatus.PENDING).target(OrderLineStatus.CANCELLED).event(OrderLineEvent.CANCEL_ORDER).action(cancelAction())

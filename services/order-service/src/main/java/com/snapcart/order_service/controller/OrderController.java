@@ -16,12 +16,12 @@ public class OrderController {
 
     @PostMapping("/checkout")
     public ResponseEntity<?> checkout(@RequestBody CheckOutRequest request) {
-        return SnapCartResponse.successResponse(orderService.createOrder(request), null);
+        return SnapCartResponse.successResponse(orderService.createOrder(request));
     }
 
     @GetMapping
     public ResponseEntity<?> filterOrder(FilterOrderRequest request) {
-        return SnapCartResponse.successResponse(orderService.filterOrder(request), null);
+        return SnapCartResponse.successListResponse(orderService.filterOrder(request));
     }
 
 }

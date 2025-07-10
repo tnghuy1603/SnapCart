@@ -3,6 +3,7 @@ package com.snapcart.order_service.service.impl;
 import com.snapcart.order_service.dto.response.*;
 import com.snapcart.order_service.entity.CartEntity;
 import com.snapcart.order_service.dto.response.CartLine;
+import com.snapcart.order_service.exception.OrderServiceException;
 import com.snapcart.order_service.repository.CartRepository;
 import com.snapcart.order_service.service.CartService;
 import com.snapcart.order_service.service.ProductServiceClient;
@@ -43,19 +44,25 @@ public class CartServiceImpl implements CartService {
     public CartResponse updateCart(String buyerId, String productId, int quantity) {
         CartEntity cartEntity = cartRepository.findByBuyerId(buyerId);
         if (cartEntity == null) {
-            throw new RuntimeException("Cart not found with buyerId: " + buyerId);
+            throw OrderServiceException.buildBadRequest("Cart not found with buyerId: " + buyerId);
         }
+
         Map<String, CartLine> cartLineMap = cartEntity.getCartLines()
                 .stream()
                 .collect(Collectors.toMap(CartLine::getProductId, Function.identity()));
+
         if (cartLineMap.containsKey(productId)) {
             CartLine cartLine = cartLineMap.get(productId);
+            if (quantity == 0) {
+                cartEntity.getCartLines().remove(cartLine);
+            }
             cartLine.setQuantity(quantity);
         } else {
             CartLine cartLine = new CartLine();
             cartLine.setProductId(productId);
             cartLine.setQuantity(quantity);
             cartEntity.getCartLines().add(cartLine);
+            cartEntity = cartRepository.save(cartEntity);
         }
         cartEntity = cartRepository.save(cartEntity);
         return this.bindProductInfo(cartEntity);
@@ -170,7 +177,5 @@ public class CartServiceImpl implements CartService {
                 .updatedAt(cartEntity.getUpdatedAt())
                 .build();
     }
-
-
 
 }

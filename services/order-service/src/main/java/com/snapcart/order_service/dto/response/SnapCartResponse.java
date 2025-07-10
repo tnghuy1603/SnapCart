@@ -38,6 +38,14 @@ public class SnapCartResponse<T> {
                 .build();
         return ResponseEntity.ok(response);
     }
+    public static <T> ResponseEntity<SnapCartResponse<T>> successResponse(T data) {
+        SnapCartResponse<T> response = SnapCartResponse.<T>builder()
+                .success(true)
+                .data(data)
+                .code(200)
+                .build();
+        return ResponseEntity.ok(response);
+    }
 
     public static <T> ResponseEntity<SnapCartResponse<T>> failureResponse(String message, Integer code) {
         SnapCartResponse<T> response = SnapCartResponse.<T>builder()
@@ -60,4 +68,16 @@ public class SnapCartResponse<T> {
                 .build();
         return ResponseEntity.ok(response);
     }
+    public static <T> ResponseEntity<SnapCartResponse<List<T>>> successListResponse(Page<T> page) {
+        SnapCartResponse<List<T>> response = SnapCartResponse.<List<T>>builder()
+                .success(true)
+                .data(page.getContent())
+                .currentPage(page.getNumber())
+                .totalPage(page.getTotalPages())
+                .totalElement(page.getTotalPages())
+                .pageSize(page.getSize())
+                .build();
+       return ResponseEntity.ok(response);
+    }
+
 }
