@@ -31,4 +31,9 @@ public class ProductController {
     public Object updateProduct(@PathVariable("id") String id, @RequestBody Object request) {
         return productServiceClient.updateProduct(id, request);
     }
+
+    @GetMapping("{id}")
+    public Object getProductDetails(@PathVariable String id) {
+        return productServiceClient.getProductDetails(id);
+    }
 }

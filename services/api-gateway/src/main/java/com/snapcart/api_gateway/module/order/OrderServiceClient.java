@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
-@FeignClient(name = "order-service", url = "${api.order-service-host")
+@FeignClient(name = "order-service", url = "${api.order-service-host}")
 public interface OrderServiceClient {
     @PostMapping("orders/checkout")
     ResponseEntity<?> checkout(@RequestBody Object request);

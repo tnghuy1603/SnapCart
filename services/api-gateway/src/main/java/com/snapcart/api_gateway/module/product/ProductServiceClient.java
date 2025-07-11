@@ -19,4 +19,7 @@ public interface ProductServiceClient {
 
     @PutMapping("{id}")
     ResponseEntity<?> updateProduct(@PathVariable("id") String id, @RequestBody Object request);
+
+    @GetMapping("{id}")
+    ResponseEntity<?> getProductDetails(@PathVariable String id);
 }
