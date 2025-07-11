@@ -17,30 +17,30 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
-    @Override
-    public void login(LoginRequest request, HttpServletResponse response) {
-        UserEntity userEntity = userRepository.findByEmail(request.getEmail());
-        if (userEntity == null) {
-            throw new RuntimeException("Invalid email or password");
-        }
-        //TODO use password encoder
-        if (!userEntity.getPassword().equals(request.getPassword())) {
-            throw new RuntimeException("Invalid password");
-        }
-        Session session = Session.builder()
-                .id(UUID.randomUUID().toString())
-                .username(userEntity.getUsername())
-                .email(userEntity.getEmail())
-                .role(userEntity.getRole())
-                .build();
-        ResponseCookie responseCookie = ResponseCookie.from("AuthToken", session.getId())
-                .httpOnly(true)
-                .maxAge(3600)
-                .sameSite("same-site")
-                .build();
-        response.addHeader("Set-Cookie", responseCookie.toString());
+        @Override
+        public void login(LoginRequest request, HttpServletResponse response) {
+            UserEntity userEntity = userRepository.findByEmail(request.getEmail());
+            if (userEntity == null) {
+                throw new RuntimeException("Invalid email or password");
+            }
+            //TODO use password encoder
+            if (!userEntity.getPassword().equals(request.getPassword())) {
+                throw new RuntimeException("Invalid password");
+            }
+            Session session = Session.builder()
+                    .id(UUID.randomUUID().toString())
+                    .username(userEntity.getUsername())
+                    .email(userEntity.getEmail())
+                    .role(userEntity.getRole())
+                    .build();
+            ResponseCookie responseCookie = ResponseCookie.from("AuthToken", session.getId())
+                    .httpOnly(true)
+                    .maxAge(3600)
+                    .sameSite("same-site")
+                    .build();
+            response.addHeader("Set-Cookie", responseCookie.toString());
 
-    }
+        }
 
     @Override
     public void register(RegisterRequest request) {

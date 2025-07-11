@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: api-gateway
+api:
+  user-service-host: ${USER_SERVICE_HOST}
+  product-service-host: ${PRODUCT_SERVICE_HOST}
+  payment-service-host: ${PAYMENT_SERVICE_HOST}
+  order-service-host: ${ORDER_SERVICE_HOST}
