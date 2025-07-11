@@ -23,7 +23,7 @@ public class ProductController {
     public ResponseEntity<?> filterProducts(FilterProductRequest request,
                                             @RequestParam(value = "limit", required = false, defaultValue = "8") Integer limit,
                                             @RequestParam(value = "offset", required = false, defaultValue = "0") Integer offset) {
-        return SnapCartResponse.successListResponse(productService.filterProducts(request, limit, offset), null);
+        return SnapCartResponse.successListResponse(productService.filterProducts(request, limit, offset));
     }
 
     @PostMapping

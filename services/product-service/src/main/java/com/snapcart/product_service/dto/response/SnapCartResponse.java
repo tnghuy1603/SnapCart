@@ -1,5 +1,6 @@
 package com.snapcart.product_service.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,6 +13,7 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class SnapCartResponse<T> {
     private boolean success;
     private String message;
@@ -57,7 +59,7 @@ public class SnapCartResponse<T> {
         return ResponseEntity.ok(response);
     }
 
-    public static <T> ResponseEntity<SnapCartResponse<List<T>>> successListResponse(Page<T> page, @Nullable String message) {
+    public static <T> ResponseEntity<SnapCartResponse<List<T>>> successListResponse(Page<T> page, String message) {
         SnapCartResponse<List<T>> response = SnapCartResponse.<List<T>>builder()
                 .success(true)
                 .message(message)
@@ -66,6 +68,19 @@ public class SnapCartResponse<T> {
                 .totalPage(page.getTotalPages())
                 .totalElement(page.getTotalPages())
                 .pageSize(page.getSize())
+                .build();
+        return ResponseEntity.ok(response);
+    }
+
+    public static <T> ResponseEntity<SnapCartResponse<List<T>>> successListResponse(Page<T> page) {
+        SnapCartResponse<List<T>> response = SnapCartResponse.<List<T>>builder()
+                .success(true)
+                .data(page.getContent())
+                .currentPage(page.getNumber())
+                .totalPage(page.getTotalPages())
+                .totalElement(page.getTotalPages())
+                .pageSize(page.getSize())
+                .code(200)
                 .build();
         return ResponseEntity.ok(response);
     }
