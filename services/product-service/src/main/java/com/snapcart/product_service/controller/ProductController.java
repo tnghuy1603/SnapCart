@@ -28,27 +28,27 @@ public class ProductController {
 
     @PostMapping
     public ResponseEntity<?> createProduct(@RequestBody AddProductRequest request) {
-        return SnapCartResponse.successResponse(productService.createProduct(request), null);
+        return SnapCartResponse.successResponse(productService.createProduct(request));
     }
 
     @DeleteMapping("{id}")
     public ResponseEntity<?> deleteProduct(@PathVariable("id") String id) {
-        return SnapCartResponse.successResponse(productService.deleteProduct(id), null);
+        return SnapCartResponse.successResponse(productService.deleteProduct(id));
     }
 
     @PutMapping("{id}")
     public ResponseEntity<?> updateProduct(@PathVariable("id") String id, @RequestBody UpdateProductRequest request) {
-        return SnapCartResponse.successResponse(productService.updateProduct(id, request), null);
+        return SnapCartResponse.successResponse(productService.updateProduct(id, request));
     }
 
     @GetMapping("{id}")
     public ResponseEntity<?> getProductDetails(@PathVariable String id) {
-        return SnapCartResponse.successResponse(productService.getProductById(id), null);
+        return SnapCartResponse.successResponse(productService.getProductById(id));
     }
 
     @GetMapping("/by-ids")
     public ResponseEntity<?> getProductByIds(@RequestParam("ids") List<String> ids) {
-        return SnapCartResponse.successResponse(productService.getProductByIds(ids), null);
+        return SnapCartResponse.successResponse(productService.getProductByIds(ids));
     }
     @PostMapping("/reserve-stock")
     public ResponseEntity<?> reserveStock(@RequestBody ReserveStockRequest request) {

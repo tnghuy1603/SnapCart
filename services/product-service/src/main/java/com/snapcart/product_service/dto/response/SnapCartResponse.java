@@ -39,6 +39,15 @@ public class SnapCartResponse<T> {
         return ResponseEntity.ok(response);
     }
 
+    public static <T> ResponseEntity<SnapCartResponse<T>> successResponse(T data) {
+        SnapCartResponse<T> response = SnapCartResponse.<T>builder()
+                .success(true)
+                .data(data)
+                .code(200)
+                .build();
+        return ResponseEntity.ok(response);
+    }
+
     public static <T> ResponseEntity<SnapCartResponse<T>> failureResponse(String message, Integer code) {
         SnapCartResponse<T> response = SnapCartResponse.<T>builder()
                 .success(false)

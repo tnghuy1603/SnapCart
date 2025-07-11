@@ -1,0 +1,4 @@
+USER_SERVICE_HOST=http://localhost:8081;
+PRODUCT_SERVICE_HOST=http://localhost:8084;
+PAYMENT_SERVICE_HOST=http://localhost:8083;
+ORDER_SERVICE_HOST=http://localhost:8082;
