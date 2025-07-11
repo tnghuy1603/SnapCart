@@ -17,8 +17,8 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request, HttpServletResponse response) {
-        authService.login(request, response);
-        return SnapCartResponse.successResponse("Login successful");
+
+        return SnapCartResponse.successResponse(authService.login(request, response), "Login successfully");
     }
 
     @PostMapping("/register")
